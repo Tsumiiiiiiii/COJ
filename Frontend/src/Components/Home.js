@@ -27,7 +27,7 @@ function Home() {
   return(
     <Box> 
     
-    {/* <React.Fragment>
+    <React.Fragment>
     <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel"  >
     <div class="carousel-inner">
     <div class="carousel-item active" data-bs-interval="3000">
@@ -49,8 +49,8 @@ function Home() {
     <span class="visually-hidden">Next</span>
   </button>
 </div>
-    </React.Fragment> */}
-    {/* <React.Fragment >
+    </React.Fragment>
+    <React.Fragment >
     <div style={{margin: "20px", padding: "20px  ", display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
     <div class="container" >
     <div class="row">
@@ -97,7 +97,7 @@ function Home() {
     </div>
 
     </div>
-  </React.Fragment> */}
+  </React.Fragment>
 
     <Copyright sx={{ mt: 8, mb: 4 }} />
     </Box>

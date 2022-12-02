@@ -36,6 +36,7 @@ const Item = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
   textAlign: 'center',
   elevation : 8,
+  align : 'center',
   color: theme.palette.text.secondary,
 }));
 

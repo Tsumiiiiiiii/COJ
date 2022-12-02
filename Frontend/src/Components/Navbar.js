@@ -8,9 +8,9 @@ function ConditionalRender(props) {
   if (props.isSignIn===false) {
     return (
       <div>
-        <Button color="inherit" onClick={() => navigate('SignIn')}>Sign In</Button>
+        <Button color="inherit" onClick={() => navigate('Loginfo')}>Sign In</Button>
         {/* <Divider orientation="vertical"  variant="middle" flexItem /> */}
-        <Button color="inherit" onClick={() => navigate('SignUp')}>Sign Up</Button>
+        <Button color="inherit" onClick={() => navigate('Reginfo')}>Sign Up</Button>
     </div>     
     );
   }
@@ -38,14 +38,17 @@ function Navbar () {
         justifyContent="flex-end"
         alignItems="flex-end">
         
-        <ConditionalRender isSignIn={true} />
-        
+        {/* <ConditionalRender isSignIn={false} /> */}
+        <Button color="inherit" onClick={() => navigate('Loginfo')}>Sign In</Button>
+        <Button color="inherit" onClick={() => navigate('Reginfo')}>Sign Up</Button>
+        <Button color="inherit" onClick={() => navigate('UserProfile')}>User-Stats</Button>
         <Button color="inherit" onClick={() => navigate('ProblemSet')}>ProblemSet</Button>
-        <Button color="inherit" onClick={() => navigate('Submit')}>Submit</Button>
+        {/* <Button color="inherit" onClick={() => navigate('Submit')}>Submit</Button> */}
         <Button color="inherit" onClick={() => navigate('CustomInvocation')}>Custom Invocation</Button>
-        <Button color="inherit" onClick={() => navigate('UpContests')}>Upcoming Contests</Button>
+        <Button color="inherit" onClick={() => navigate('UpContests')}>Upcoming-Contests</Button>
         <Button color="inherit" onClick={() => navigate('Help')}>Help</Button>
-        <Button color="inherit" onClick={() => navigate('LogOut')}>Log Out</Button>
+        
+        {/* <Button color="inherit" onClick={() => navigate('LogOut')}>Log Out</Button> */}
         </Box>
       </Toolbar>
 </AppBar>

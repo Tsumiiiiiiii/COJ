@@ -13,7 +13,7 @@ import { postData } from "./utility";
 
 //const Axios = require("axios");
 
-const name = "tourist"
+let name = "sad_panda"
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 ChartJS.register(CategoryScale,LinearScale,PointElement,LineElement, BarElement,Title,Tooltip,Legend)
@@ -31,6 +31,18 @@ const Item = styled(Paper)(({ theme }) => ({
 function Profile(props) {
     const location = useLocation()
     //const username = location.pathname.split("/").at(-1)
+
+    //const [name, setname] = useState("")
+
+    axios.post(`http://localhost:3000/getCFHandle`, {}).
+      then((res) => {
+        //setname(res.data.uname);
+        name = res.data.cf_handle;
+        console.log("Name", name);
+        ///setUserOutput(res.data.uname);
+      }).then(() => {
+        //setLoading(false);
+    })
 
     const [pieChartData, setPieChartData] = useState({
         labels: [],
@@ -266,7 +278,7 @@ function Profile(props) {
                         ],
                   })
                   
-                    console.log(barChartData)          
+                    console.log("BAR CHART", barChartData)          
 
             }).catch((e) => console.log("ERROR MESSAGE: ", e.message));
         }

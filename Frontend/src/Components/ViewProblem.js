@@ -34,7 +34,7 @@ const App = () => {
     .then((response) => { 
       //console.log("THE RESPONSE FROM upcoming contests IS : ", response.data);
       console.log("PDF THINGS", response.data)
-      setpdfData("/problemsets/" + response.data + ".pdf")
+      setpdfData("/problems/" + response.data + ".pdf")
       console.log("PDF THINGS", pdfData)
       //console.log(response)          
 
@@ -61,7 +61,13 @@ const App = () => {
 		);
 
 	return (
-      <div>
+    <Box sx={{ height: 900}} 
+    display="flex"    
+  justifyContent="center"
+  alignItems="center" >
+
+    
+      <Box height="90%">
         <nav>
           <button onClick={goToPrevPage}>Prev</button>
           <button onClick={goToNextPage}>Next</button>
@@ -69,14 +75,15 @@ const App = () => {
             Page {pageNumber} of {numPages}
           </p>
         </nav>
-
+        
         <Document
           file={pdfData}
           onLoadSuccess={onDocumentLoadSuccess}
         >
           <Page pageNumber={pageNumber} />
         </Document>
-      </div>
+      </Box>
+    </Box>
 	);
 };
 

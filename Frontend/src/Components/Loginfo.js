@@ -11,25 +11,26 @@ const Login = () => {
 
   const Auth = async (e) => {
     e.preventDefault();
-    try {
-      await axios({
-        method: 'post',
-        url: 'http://localhost:3000/login',
-        data: {
-          usernameORemail: usernameORemail,
-          password: password,
-        },
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      })
-      console.log("success LOGIN");
-      //navigate("/");
-    } catch (error) {
-      if (error.response) {
+    await axios({
+      method: 'post',
+      url: 'http://localhost:3000/login',
+      data: {
+        usernameORemail: usernameORemail,
+        password: password,
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }).then((response) => {
+      const status = response.data.vd
+      console.log("SUCCESS", response.data, response.data.vd)
+      if (status === 1) {
+          console.log("success LOGIN", );
+          navigate("/");
+      } else {
         setMsg('Invalid username or password!');
       }
-    }
+    })
   };
 
   return (
@@ -46,7 +47,7 @@ const Login = () => {
                     <input
                       type="text"
                       className="input"
-                      placeholder="Username OR Email"
+                      placeholder="Username"
                       value={usernameORemail}
                       onChange={(e) => setusernameORemail(e.target.value)}
                     />
@@ -66,7 +67,7 @@ const Login = () => {
                 </div>
                 <div className="field mt-5">
                   <p>Don't have an account?</p>
-                  <a href="register">Sign Up</a>
+                  <a href="http://localhost:3001/Reginfo">Sign Up</a>
                 </div>
                 <div className="field mt-5">
                   <button className="button is-success is-fullwidth">
@@ -74,9 +75,6 @@ const Login = () => {
                   </button>
                 </div>
               </form>
-              <a href="http://localhost:5000/api/login/federated/google">
-                Sign in With Google
-              </a>
             </div>
           </div>
         </div>

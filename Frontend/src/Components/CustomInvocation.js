@@ -45,11 +45,12 @@ function compile() {
 	Axios.post(`http://localhost:3000/compile`, {
 	code: userCode,
 	language: userLang,
-	input: userInput }).then((res) => {
-	setUserOutput(res.data.output);
-	}).then(() => {
-	setLoading(false);
-	})
+	input: userInput }).
+		then((res) => {
+			setUserOutput(res.data.output);
+		}).then(() => {
+			setLoading(false);
+		})
 }
 
 // Function to clear the output screen
@@ -75,7 +76,7 @@ return (
 			theme={userTheme}
 			language={userLang}
 			defaultLanguage="python"
-			defaultValue="# Enter your code here "
+			defaultValue=""
 			onChange={(value) => { setUserCode(value) }}
 		/>
 

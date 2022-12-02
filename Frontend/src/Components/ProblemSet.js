@@ -49,12 +49,20 @@ function getPDFlink(p_id) {
   return ret;
 }
 
+function getsubmitlink(p_id) {
+  let ret = "http://localhost:3001/Submit/" + p_id;
+  return ret;
+}
+
 function ProblemSet() {
 
        const [probData, setProbData] = useState([]);
 
+       const [isSort, setisSort] = useState(-1);
+
        useEffect(() => {
-                async function getUpcomingContests() {
+
+          async function getUpcomingContests() {
                   let config = {
                       method: "POST",
                       url: 'http://localhost:3000/get_problem_set',
@@ -72,11 +80,59 @@ function ProblemSet() {
             }).catch((e) => console.log("ERROR MESSAGE: ", e.message));
         }
 
-        getUpcomingContests()
+      getUpcomingContests()
 
-       
+      }, [])
 
-    }, [])
+
+  function GetSortOrderAsc(prop) {    
+    return function(a, b) {    
+        if (a[prop] < b[prop]) {    
+            return 1;    
+        } else if (a[prop] > b[prop]) {    
+            return -1;    
+        }    
+        return 0;    
+    }    
+  }
+  
+  function GetSortOrderDsc(prop) {    
+    return function(a, b) {    
+        if (a[prop] > b[prop]) {    
+            return 1;    
+        } else if (a[prop] < b[prop]) {    
+            return -1;    
+        }    
+        return 0;    
+    }    
+  } 
+
+	const sortProblems = () => {
+    if (isSort == -1) {
+      return probData;
+    } else if (isSort == 0) {
+      let temp = probData;
+      temp = temp.sort(GetSortOrderAsc("solve_count"));
+      return temp;
+
+    } else {
+      let temp = probData;
+      temp = temp.sort(GetSortOrderDsc("solve_count"));
+      return temp;
+
+    }
+	};
+
+  	const togglesort = () => {
+      let temp = isSort
+      if (temp == -1) {
+        temp = 0;
+      } else {
+        temp = 1 - temp;
+      }
+      setisSort(temp);
+	};
+
 
     return (
       <Box>
@@ -85,19 +141,21 @@ function ProblemSet() {
               <Table align="center" sx={{ minWidth: 650 }} size="small" aria-label="customized table">
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell style = {{textAlign : "center"}}>#</StyledTableCell>
+                    <StyledTableCell style = {{textAlign : "center"}}>#       <button><a href = "http://localhost:3001/AddProblem">(+)</a></button></StyledTableCell>
                     <StyledTableCell style = {{textAlign : "center"}}>Name</StyledTableCell>
                     <StyledTableCell style = {{textAlign : "center"}}>Tag(s)</StyledTableCell>
-                    <StyledTableCell style = {{textAlign : "center"}}>Solve Count</StyledTableCell>
+                    <StyledTableCell style = {{textAlign : "center"}}>Solve Count <button onClick={togglesort}>^</button></StyledTableCell>
+                    <StyledTableCell style = {{textAlign : "center"}}></StyledTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {probData.map((data) => (
+                  {sortProblems().map((data) => (
                     <StyledTableRow key={data.id}>
                       <StyledTableCell style = {{textAlign : "center"}}> {data.code}</StyledTableCell>
                       <StyledTableCell style = {{textAlign : "center"}}> <a href = {getPDFlink(data.code)}><u>{data.name}</u></a></StyledTableCell>
                       <StyledTableCell style = {{textAlign : "center"}}>{data.tag}</StyledTableCell>
                       <StyledTableCell style = {{textAlign : "center"}}> <a href = {getLink(data.code)}><u>{data.solve_count}</u></a></StyledTableCell>
+                      <StyledTableCell style = {{textAlign : "center"}}><a href = {getsubmitlink(data.code)}><u>Submit</u></a></StyledTableCell>
                     </StyledTableRow>
                   ))}
                 </TableBody>
