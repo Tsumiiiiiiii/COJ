@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Help, Home, Log, Navbar, Run, SignIn, SignUp, UpContests, UserProfile, CustomInvocation, ProblemSet, Solvers, ViewProblem, AddProblem, Submit, Loginfo, Reginfo } from "./Components";
+import { Help, Home, Log, Navbar, Run, SignIn, SignUp, UpContests, UserProfile, CustomInvocation, ProblemSet, Solvers, ViewProblem, AddProblem, Submit, Loginfo, Reginfo, Setting, Ranking } from "./Components";
 
 
 function App() {
@@ -27,6 +27,9 @@ function App() {
 
           <Route path="/AddProblem" element={<AddProblem />} />
           <Route path="/Submit/:p_id" element={<Submit />} />
+
+          <Route path="/Setting" element={<Setting />} />
+          <Route path="/Ranking" element={<Ranking />} />
           {/* </Route> */}
           {/* <Route path="*" element={<div align="center" ><img src={require('./Components/404.jpg')} alt="404 Not Found"/></div>} /> */}
         </Routes>

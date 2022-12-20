@@ -7,6 +7,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title, CategoryScale,Lin
 import { Pie, Line, Bar } from "react-chartjs-2"
 import { styled } from '@mui/material/styles'; 
 import Paper from '@mui/material/Paper';
+import spinner from './loadjs.gif';
 //import faker from 'faker';
 import { postData } from "./utility";
 
@@ -29,22 +30,11 @@ const Item = styled(Paper)(({ theme }) => ({
 
 
 function Profile(props) {
+
+    
     const location = useLocation()
-    //const username = location.pathname.split("/").at(-1)
 
-    //const [name, setname] = useState("")
-
-    axios.post(`http://localhost:3000/getCFHandle`, {}).
-      then((res) => {
-        //setname(res.data.uname);
-        name = res.data.cf_handle;
-        console.log("Name", name);
-        ///setUserOutput(res.data.uname);
-      }).then(() => {
-        //setLoading(false);
-    })
-
-    const [pieChartData, setPieChartData] = useState({
+        const [pieChartData, setPieChartData] = useState({
         labels: [],
         datasets: [
             {
@@ -69,6 +59,8 @@ function Profile(props) {
     const [prating, setprating] = useState("")
     const [ratingcolor, setratingcolor] = useState("")
     const [lineChartLabels, setLineChartLabels] = useState([]);
+    const [isError, setError] = useState(false);
+    const [notLoading, setnotLoading] = useState(false);
     const labels = []
     const blabels = []
     const [lineChartData, setlineChartData] = useState({
@@ -94,9 +86,34 @@ function Profile(props) {
             },
         ],
     })
+    //const username = location.pathname.split("/").at(-1)
 
+    //const [name, setname] = useState("")
 
+    
+      
+    
     useEffect(() => {
+
+        //setnotLoading(false);
+        
+
+    axios.post(`http://localhost:3000/getCFHandle`, {}).
+      then((res) => {
+        //setname(res.data.uname);
+        name = res.data.cf_handle;
+        console.log("Name", name);
+        ///setUserOutput(res.data.uname);
+      }).then(() => {
+        //setLoading(false);
+
+
+
+    //})
+
+
+
+
         async function getUserVerdictCount() {
             let config = {
               method: "POST",
@@ -114,7 +131,9 @@ function Profile(props) {
                 .then((response) => { 
                   //console.log("THE RESPONSE FROM BACKEND IS : ", response.data);
                   console.log("THE VERDICT CHART IS", response.data)
-                              if (response.data[0] > 0) setPieChartData({
+
+                  if (response.data == '') setError(true);
+                              if (response.data[0] > 0) {setPieChartData({
                 labels: ["AC", "WA", "TLE", "MLE", "RE", "CE", "OTHERS"],
                 datasets: [
                     {
@@ -132,7 +151,10 @@ function Profile(props) {
                         borderWidth: 1,
                     },
                 ],
-            })
+            })}
+            else {
+                //setError(true);
+            }
 
             }).catch((e) => console.log("ERROR MESSAGE: ", e.message));
 
@@ -143,11 +165,6 @@ function Profile(props) {
         getUserVerdictCount()
 
        
-
-    }, [])
-
-
-     useEffect(() => {
         
         function fcolor(rat) {
             const rating = parseInt(rat);
@@ -171,38 +188,9 @@ function Profile(props) {
             return col;
         }
 
-        async function getProfileInfo() {
-            let config = {
-                method: "POST",
-                url: 'http://localhost:3000/cf_user_profile_info',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-              data: {
-                name: name,
-              }
-            };
-         await axios(config)
-                .then((response) => { 
-                  //console.log("THE RESPONSE FROM BACKEND IS : ", response.data);
-                  setpurl(response.data.titlePhoto);
-                  setpname(response.data.handle);
-                  setprating(response.data.rating);
-                  setratingcolor(fcolor(response.data.rating));
 
-                  console.log("THE COLOR IS", ratingcolor);
-                              
-
-            }).catch((e) => console.log("ERROR MESSAGE: ", e.message));
-        }
-
-
-        getProfileInfo()
        
 
-    }, [])
-
-     useEffect(() => {
                 async function getRatingHistory() {
             let config = {
                 method: "POST",
@@ -245,12 +233,41 @@ function Profile(props) {
 
         getRatingHistory()
 
+
+        
+            async function getProfileInfo() {
+            let config = {
+                method: "POST",
+                url: 'http://localhost:3000/cf_user_profile_info',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+              data: {
+                name: name,
+              }
+            };
+         await axios(config)
+                .then((response) => { 
+                  console.log("THE RESPONSE FROM PICTUREEEEEE IS : ", response.data);
+                  if (response.data === '') {
+                    setError(true);
+                  }
+                  setpurl(response.data.titlePhoto);
+                  setpname(response.data.handle);
+                  setprating(response.data.rating);
+                  setratingcolor(fcolor(response.data.rating));
+
+                  console.log("THE COLOR IS", ratingcolor);
+                              
+
+            }).catch((e) => console.log("ERROR MESSAGE: ", e.message));
+        }
+
+
+        getProfileInfo()
+
        
 
-    }, [])
-
-
-         useEffect(() => {
                 async function getProbRating() {
             let config = {
                 method: "POST",
@@ -287,12 +304,20 @@ function Profile(props) {
 
        
 
-    }, [])
+    }).then(() => {
+        console.log("ALLL DONEEEEEE ?")
+        setnotLoading(true);
+    })
+
+        }, [])
 
 
     return (
+        <div>
+        {!isError ? (
         //<Container component="main" alignItems="center">
-           <Box> 
+            //<div>
+            <Box> 
             <Grid container spacing={2} columns={16}>
                 <Grid item xs={5}>
                      <Item><img src={purl} alt="Profile Image"/>
@@ -328,7 +353,15 @@ function Profile(props) {
             </Grid>
             
             </Box>
+         //</div>
+        ) : (
+            <div>
+			<p>Error! Make sure the CF handle entered is a valid one!</p>
+			</div>
+        )
         //</Container>
+        }
+    </div>
     )
 }
 

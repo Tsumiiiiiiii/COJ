@@ -13,3 +13,5 @@ export { default as Solvers } from "./Solvers";
 export { default as ViewProblem } from "./ViewProblem";
 export { default as AddProblem } from "./AddProblem";
 export { default as Submit } from "./Submit";
+export { default as Setting } from "./Setting";
+export { default as Ranking } from "./Ranking";

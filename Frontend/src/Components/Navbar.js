@@ -47,6 +47,8 @@ function Navbar () {
         <Button color="inherit" onClick={() => navigate('CustomInvocation')}>Custom Invocation</Button>
         <Button color="inherit" onClick={() => navigate('UpContests')}>Upcoming-Contests</Button>
         <Button color="inherit" onClick={() => navigate('Help')}>Help</Button>
+        <Button color="inherit" onClick={() => navigate('Setting')}>Settings</Button>
+        <Button color="inherit" onClick={() => navigate('Ranking')}>Ranking</Button>
         
         {/* <Button color="inherit" onClick={() => navigate('LogOut')}>Log Out</Button> */}
         </Box>

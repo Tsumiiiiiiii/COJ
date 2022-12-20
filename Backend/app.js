@@ -117,6 +117,102 @@ app.post("/get_problem_verdicts", async (req, res) => {
     res.send(data);
 });
 
+async function getACSubs(p_id) {
+    let statement = 'select code, uname from problems_solvers;';
+    let ac = await client.query(statement);
+    return ac.rows;
+}
+
+app.post("/get_ranks", async (req, res) => {
+    console.log("Ashchi eikhane get rankings");
+    let data = await getACSubs();
+    //console.log(data);
+
+    var codes = [];
+    var names = [];
+
+    for (ii in data) {
+        var i = data[ii];
+        //console.log(i)
+        if (codes.includes(i.code)) {
+            
+        } else {
+            codes.push(i.code);
+        }
+        if (names.includes(i.uname)) {
+
+        } else {
+            names.push(i.uname);
+        }
+    }
+
+    var grid = {};
+    for(var i = 0; i < codes.length; i++){
+        var code = codes[i];
+        if(code in grid == false){
+            grid[code] = {}; // must initialize the sub-object, otherwise will get 'undefined' errors
+        }
+
+        for(var j = 0; j < names.length; j++){
+            var name = names[j];
+            grid[code][name] = 0;
+        }
+    }
+
+    for (ii in data) {
+        var i = data[ii];
+        grid[i.code][i.uname] = 1;
+    }
+
+    var cnt = new Map()
+    for (iname in names) {
+        var name = names[iname];
+        cnt[name] = {};
+        cnt[name] = 0;
+    }
+
+
+    for (iname in names) {
+        for (icode in codes) {
+            var name = names[iname];
+            var code = codes[icode];
+            if (grid[code][name]) cnt[name] += 1;
+        }
+    }
+
+    console.log(cnt);
+
+
+    const myMap = new Map();
+    for (i in cnt) {
+        myMap.set(i, cnt[i]);
+    }
+    //console.log(myMap)
+
+    var Cnt = new Map([...myMap.entries()].sort((a, b) => b[1] - a[1]));
+    //console.log(Cnt);
+
+
+    function mapToObj(map){
+        var obj = []
+        var cur = 1;
+        map.forEach(function(v, k){
+            obj.push({k, v, cur});
+            cur += 1;
+        })
+        return obj
+    }
+    var obj = mapToObj(Cnt)
+
+    console.log(obj);
+
+
+    const json = JSON.stringify(obj);
+    console.log(json)
+    res.send(json)
+    
+});
+
 async function getLastLog() {
     const statement = 'SELECT * FROM logs WHERE CTID = (SELECT MAX(CTID) FROM logs);';
     let data = await client.query(statement);
@@ -205,6 +301,39 @@ app.post("/signup", async (req, res) => {
     
 });
 
+async function updateUserData(name, email, password, cf) {
+    //let statement = 'insert into user_table values (' + "\'" + name + "\'" + ", " + "\'" + email + "\'" + ", " + "\'" + password + "\'" + ", " + "\'" + cf + "\'" + ");";
+    //console.log("USER DATA INSERT STATEMENT :", statement);
+    let statement = '';
+    if (email !== '') {
+        statement = 'update user_table set email = ' + '\'' + email + '\'' + " where handle = " +'\'' + name + '\'' + ';';
+        console.log(statement);
+        await client.query(statement)
+    }
+    if (password !== '') {
+        statement = 'update user_table set password = ' + '\'' + password + '\'' + " where handle = " +'\'' + name + '\'' + ';';
+        console.log(statement);
+        await client.query(statement)
+    }
+    if (cf !== '') {
+        statement = 'update user_table set cf_handle = ' + '\'' + cf + '\'' + " where handle = " +'\'' + name + '\'' + ';';
+        console.log(statement);
+        await client.query(statement)
+    }
+    //await client.query(statement);
+    //console.log(data.rows);
+    //return data.rows;
+}
+
+app.post("/update_user_info", async (req, res) => {
+    console.log("The request is: ", req.body);
+    const {email, password, confPassword, cf} = req.body;
+    let name = await getLastLog();
+    console.log(name.uname);
+    await updateUserData(name.uname, email, password, cf);
+    
+});
+
 app.post("/cf_user_verdict_count", (req, res) => {
     //console.log("Ashchi eikhane verdict count", req.body.name);
     let options = {       
@@ -214,6 +343,7 @@ app.post("/cf_user_verdict_count", (req, res) => {
             if (err) {
                 console.log("ERRROR in verd_info!");
                 console.log(err);
+                res.send("");
             } else {
                 const data= JSON.parse(results[0]);
                 //console.log(data)
@@ -232,6 +362,7 @@ app.post("/cf_user_rating_history", (req, res) => {
             if (err) {
                 console.log("ERRROR in rating_history!");
                 console.log(err);
+                res.send("");
             } else {
                 const data= JSON.parse(results[0]);
                 console.log("FUCK", data);
@@ -252,6 +383,7 @@ app.post("/cf_user_profile_info", (req, res) => {
             console.log("ERRROR in profile_info!");
             //console.log(results)
             console.log(err);
+            res.send("");
         } else {
             const data= JSON.parse(results[0]);
             //console.log(data);
@@ -272,6 +404,7 @@ app.post("/cf_prob_rating", (req, res) => {
             console.log("ERRROR in prob_rating!");
             //console.log(results)
             console.log(err);
+            res.send("");
         } else {
             const data= JSON.parse(results[0]);
             console.log(data);
@@ -462,6 +595,7 @@ app.post("/judgeSolution", (req, res) => {
 	//getting the required data from the request
 	let code = req.body.code;
 	let language = req.body.language;
+    console.log("CODE REQ IS: ", req.body);
     let id = req.body.id;
 	let input;
     let vernum = 4;
@@ -484,7 +618,7 @@ app.post("/judgeSolution", (req, res) => {
     }
 
     let fname = "D://coj.backup//Frontend//public//problems//"
-    input = syncReadFile(fname + "1004.txt");
+    input = syncReadFile(fname + id + ".txt");
     console.log("FILE STUFFS", input);
 
     let output = "";
@@ -538,7 +672,10 @@ app.post("/judgeSolution", (req, res) => {
         console.log("Timeeeeeeee before ", data.data.cpuTime);
         console.log("VERRRRRRR before ", output);
 
-        correct_output = syncReadFile(fname + "1004.out");
+        correct_output = syncReadFile(fname + id + ".out");
+
+        console.log("FILENAME IS: ", fname + id +  ".out");
+
         correct_output = correct_output.trim();
 
         console.log("corr_output before ", correct_output);
@@ -547,6 +684,7 @@ app.post("/judgeSolution", (req, res) => {
 
         let vd = "AC";
         let ret = {};
+        console.log("OUTPUT IS: ", data.data);
         //console.log("PRINT : ", output.indexOf("ZeroDivisionError"));
         //console.log("PRINT22 : ", output.includes("ZeroDivisionError"));
         if (output.indexOf("ZeroDivisionError") !== -1 || output.indexOf("IndexError") !== -1) {
@@ -563,7 +701,7 @@ app.post("/judgeSolution", (req, res) => {
                 "Time" : "0",
                 "Memory" : "0",
             } 
-        } else if (data.data.cpuTime == null) {
+        } else if (output.indexOf("Timeout") !== -1) {
             vd = "TLE";
             ret = {
                 "verdict" : "Time Limit Exceeded",
@@ -590,13 +728,20 @@ app.post("/judgeSolution", (req, res) => {
                 "Time" : data.data.cpuTime * 1000,
                 "Memory" : data.data.memory
             } 
-        } else {
+        } else if (output !== correct_output && data.data.cpuTime !== null) {
             vd = "WA";
             ret = {
                 "verdict" : "Wrong Answer",
                 "Time" : data.data.cpuTime * 1000,
                 "Memory" : data.data.memory
             }
+        } else {
+            vd = "CLE";
+            ret = {
+                "verdict" : "Compilation Error",
+                "Time" : "0",
+                "Memory" : "0",
+            }  
         }
 
         updSubmissions(id, ogname, vd);

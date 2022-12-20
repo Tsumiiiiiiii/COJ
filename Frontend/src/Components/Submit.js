@@ -14,12 +14,17 @@ import Paper from '@mui/material/Paper';
 import { fontSize } from "@mui/system";
 import Editor from "@monaco-editor/react";
 import Select from 'react-select';
+import spinner from './loadjs.gif';
+import './CuInv.css';
 
 const App = () => {
 
   const { p_id } = useParams()
 
   //const p_id = 1004;
+
+
+  const [loading, setLoading] = useState(false);
 
   const [ogname, setogname] = useState("")
 
@@ -58,6 +63,7 @@ const App = () => {
     })
 
 	function submitCode() {
+    setLoading(true);
     if (userCode === ``) {
       return
     }
@@ -76,7 +82,7 @@ const App = () => {
           setMl("MEMORY : " + res.data.Memory + " KB");
           //setUserOutput(res.data.output);
         }).then(() => {
-          //setLoading(false);
+          setLoading(false);
       })
     }
 
@@ -103,11 +109,22 @@ const App = () => {
         </Grid>
     <Grid item xs={6}>
 
-    <p>{verdict}</p>
-    <br></br>
-    <p>{tl}</p>
-    <br></br>
-    <p>{ml}</p>
+    {
+      loading ? (
+        <div className="spinner-box">
+        <img src={spinner} alt="Loading..." />
+        </div>
+      ) : (
+        <div>
+        <p>{verdict}</p>
+        <br></br>
+        <p>{tl}</p>
+        <br></br>
+        <p>{ml}</p>
+        </div>
+      )
+    }
+
 
     </Grid>
     </Grid>
